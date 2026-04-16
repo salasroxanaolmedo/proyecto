@@ -1,0 +1,65 @@
+nav(style="display:flex; justify-content: space-between; align-items: center;")
+  div(style="display:flex; align-items: center; gap: 20px;")
+    // LOGO/BRAND DINÁMICO
+    if usuarioRol === 'cliente'
+      a.navbar-brand(href="/cliente/ordenes")
+        span.logo-hex ⚙
+        | Auto
+        span.ac Taller Olmedo
+    else if usuarioRol === 'empleado'
+      a.navbar-brand(href="/empleado/tickets")
+        span.logo-hex ⚙
+        | Auto
+        span.ac Taller Olmedo
+    else if usuarioRol === 'recepcionista' || usuarioRol === 'admin'
+      a.navbar-brand(href="/recepcion")
+        span.logo-hex ⚙
+        | Auto
+        span.ac Taller Olmedo
+    else
+      a.navbar-brand(href="/")
+        span.logo-hex ⚙
+        | Auto
+        span.ac Taller Olmedo
+
+    // MENÚ DE NAVEGACIÓN DINÁMICO SEGÚN ROL
+    div(style="display:flex; gap: 15px;")
+      if usuarioRol === 'cliente'
+      
+      else if usuarioRol === 'empleado'
+        a.nav-link(href="/empleado/tickets" style="color:#ddd; text-decoration:none;") Ver Tickets
+
+      else if usuarioRol === 'recepcionista'
+        a.nav-link(href="/recepcion" style="color:#ddd; text-decoration:none;")  Generar Orden
+        a.nav-link(href="/inventario" style="color:#ddd; text-decoration:none;")  Ver Inventario
+        
+      else if usuarioRol === 'admin'
+        a.nav-link(href="/recepcion" style="color:#ddd; text-decoration:none;")  Generar Orden
+        a.nav-link(href="/inventario" style="color:#ddd; text-decoration:none;")  Ver Inventario
+        a.nav-link(href="/servicios" style="color:#ddd; text-decoration:none;")  Servicios
+        a.nav-link(href="/auth/usuarios" style="color:#ddd; text-decoration:none;")  Usuarios
+        a.nav-link(href="/auth/registro" style="color:#ddd; text-decoration:none;")  Registro de Usuarios
+
+  // BARRA LATERAL DERECHA (PERFIL Y LOGOUT)
+  .nav-right(style="display:flex; align-items: center; gap: 15px;")
+    .emp-info
+      if usuarioRol === 'empleado'
+        strong= (empleado && empleado.nombre) ? empleado.nombre : 'Mecánico'
+        if empleado && empleado.idCorto
+          span Mecánico · ID-#{empleado.idCorto}
+      else if usuarioRol === 'recepcionista'
+        strong= (empleado && empleado.nombre) ? empleado.nombre : 'Recepción'
+        if empleado && empleado.idCorto
+          span ID-#{empleado.idCorto}
+      else if usuarioRol === 'admin'
+        strong Administrador
+      else if usuarioRol === 'cliente'
+        strong= cliente.nombre
+      else
+        strong Visitante
+    
+    span.turno
+      span.dot
+      | Activo
+
+    a.btn-logout(href="/auth/logout") ↩ Salir

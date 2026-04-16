@@ -1,0 +1,80 @@
+//- Prueba con la extensión explícita .pug
+include ../layouts/header2.pug
+
+block head
+  title Administración de usuarios | AutoTaller Olmedo
+  style.
+    /* --- ESTILOS DE REGISTRO --- */
+    .auth-container {
+      max-width: 500px;
+      margin: 40px auto;
+      background: #111;
+      padding: 30px;
+      border: 1px solid #333;
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    /* ... resto de tus estilos ... */
+    .btn-registro {
+      width: 100%;
+      padding: 15px;
+      background: #ff6600; /* var(--naranja) */
+      color: #000;
+      border: none;
+      font-family: 'Bebas Neue';
+      font-size: 1.4rem;
+      letter-spacing: 2px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: 0.3s;
+      margin-top: 10px;
+    }
+
+block contenido
+  nav
+    a.navbar-brand(href="/recepcion")
+      span.logo-hex ⚙
+      | Auto
+      span.ac Taller Olmedo
+    h1.nav-center-title GESTIÓN DE <span class="highlight">USUARIOS</span>
+    .nav-right
+      a.btn-logout(href="/recepcion") ↩ Volver
+
+  div.auth-container
+    h2 Crear Nueva Cuenta
+    form(action="/auth/registro" method="POST")
+      .form-group
+        label Nombre Completo:
+        input(type="text" name="nombre" required)
+      .form-group
+        label Teléfono:
+        input(type="text" name="telefono" maxlength="10")
+      .form-group
+        label Correo Electrónico:
+        input(type="email" name="email" required)
+      .form-group
+        label Contraseña:
+        input(type="password" name="password" required)
+      .form-group
+        label Rol:
+        select(name="rol" id="rol" onchange="toggleEspecialidad()")
+          option(value="cliente") Cliente
+          option(value="empleado") Empleado
+          option(value="recepcionista") Recepcionista
+          option(value="admin") Administrador
+
+      div#div-empleado-extra(style="display: none;")
+        .form-group
+          label Especialidad:
+          input(type="text" name="especialidad")
+        .form-group
+          label Salario por Hora:
+          input(type="number" name="salario_hora" step="0.01")
+      
+      button(type="submit" class="btn-registro")  REGISTRAR EN SISTEMA
+
+  script.
+    function toggleEspecialidad() {
+      const rol = document.getElementById('rol').value;
+      document.getElementById('div-empleado-extra').style.display = (rol === 'empleado') ? 'block' : 'none';
+    }

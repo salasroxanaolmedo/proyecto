@@ -1,0 +1,17 @@
+// Renderiza el formulario para que el usuario ingrese los datos de un nuevo servicio
+div.formulario-container
+  h3 Registrar Nuevo Servicio
+  form(action="/servicios/agregar" method="POST")
+    div.form-group
+      label(for="nombre_servicio") Nombre del Servicio:
+      input(type="text" name="nombre_servicio" id="nombre_servicio" required)
+    
+    div.form-group
+      label(for="precio_base") Precio Base:
+      input(type="number" name="precio_base" id="precio_base" step="0.01" min="0" required)
+    
+    div.form-group
+      label(for="tiempo_estimado_hrs") Tiempo Estimado (Horas):
+      input(type="number" name="tiempo_estimado_hrs" id="tiempo_estimado_hrs" min="1" required)
+    
+    button(type="submit") Guardar Servicio

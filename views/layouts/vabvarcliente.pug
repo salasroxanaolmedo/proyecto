@@ -1,0 +1,15 @@
+nav
+  a.navbar-brand(href="/cliente/ordenes")
+    span.logo-hex ⚙
+    | Auto
+    span.ac Taller Olmedo
+  a.nav-link(href="/cliente/ordenes" style="color:#ddd; text-decoration:none;") ⬅ Volver a Órdenes
+  .nav-right
+    .emp-info
+      if !cliente
+        strong Cliente
+      else
+        strong= cliente.nombre
+        span Cliente
+    a.btn-logout(href="/auth/logout")
+      | ↩ Salir

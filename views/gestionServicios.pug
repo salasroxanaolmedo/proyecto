@@ -1,0 +1,212 @@
+include ./layouts/header2
+
+block head
+  title Servicios | AutoTaller Olmedo
+  style.
+    /* ======= GESTIÓN SERVICIOS ======= */
+    .gs-container {
+      max-width: 1100px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+    .gs-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+    .gs-header h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem;
+      letter-spacing: 2px;
+      color: #fff;
+      margin: 0;
+    }
+    .gs-header h1 span { color: var(--naranja, #ff6600); }
+
+    /* LAYOUT DOS COLUMNAS */
+    .gs-layout {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 800px) {
+      .gs-layout { grid-template-columns: 1fr; }
+    }
+
+    /* CARD FORMULARIO */
+    .gs-card {
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 6px;
+      padding: 24px;
+      position: sticky;
+      top: 20px;
+    }
+    .gs-card h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.2rem;
+      color: #ff6600;
+      letter-spacing: 2px;
+      margin: 0 0 18px;
+      border-bottom: 1px solid #222;
+      padding-bottom: 10px;
+    }
+    .gs-card label {
+      display: block;
+      font-size: 0.72rem;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 5px;
+      margin-top: 14px;
+    }
+    .gs-card label:first-of-type { margin-top: 0; }
+    .gs-card input {
+      width: 100%;
+      box-sizing: border-box;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      color: #eee;
+      padding: 9px 12px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      transition: border-color 0.2s;
+    }
+    .gs-card input:focus { outline: none; border-color: #ff6600; }
+
+    .btn-guardar-srv {
+      width: 100%;
+      margin-top: 20px;
+      background: #ff6600;
+      color: #000;
+      border: none;
+      padding: 10px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1rem;
+      letter-spacing: 1px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-guardar-srv:hover { background: #e05500; }
+
+    /* BUSCADOR TABLA */
+    .gs-search {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 4px;
+      padding: 7px 12px;
+    }
+    .gs-search input {
+      background: transparent;
+      border: none;
+      color: #eee;
+      font-size: 0.88rem;
+      outline: none;
+      width: 100%;
+    }
+    .gs-search span { color: #444; }
+
+    /* TABLA */
+    table.gs-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    .gs-table thead th {
+      background: #111;
+      color: #ff6600;
+      padding: 10px 14px;
+      text-align: left;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 0.92rem;
+      letter-spacing: 1px;
+      border-bottom: 2px solid #222;
+    }
+    .gs-table tbody tr {
+      border-bottom: 1px solid #1a1a1a;
+      transition: background 0.15s;
+    }
+    .gs-table tbody tr:hover { background: #161616; }
+    .gs-table td {
+      padding: 11px 14px;
+      color: #ccc;
+      vertical-align: middle;
+    }
+    .gs-table .td-nombre { color: #eee; font-weight: 600; }
+    .gs-table .td-precio { color: #ff6600; font-family: 'Bebas Neue', sans-serif; font-size: 1.05rem; }
+    .tiempo-badge {
+      display: inline-block;
+      background: #1a1a2a;
+      color: #8899ff;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+    }
+    .empty-state {
+      text-align: center;
+      color: #444;
+      padding: 40px;
+    }
+
+block contenido
+  include ./layouts/header.pug
+
+  .gs-container
+    .gs-header
+      h1 CATÁLOGO DE #[span SERVICIOS]
+
+    .gs-layout
+      // —— COLUMNA IZQUIERDA: Formulario ——
+      .gs-card
+        h2 + NUEVO SERVICIO
+        form(action="/servicios/agregar" method="POST")
+          label Nombre del Servicio *
+          input(type="text" name="nombre_servicio" placeholder="Ej: Cambio de Aceite Plus" required)
+          label Precio Base ($) *
+          input(type="number" name="precio_base" step="0.01" min="0" placeholder="0.00" required)
+          label Tiempo Estimado (Horas) *
+          input(type="number" name="tiempo_estimado_hrs" min="1" placeholder="1" required)
+          button.btn-guardar-srv(type="submit") GUARDAR SERVICIO
+
+      // —— COLUMNA DERECHA: Tabla ——
+      div
+        .gs-search
+          span ⌕
+          input#txtBuscarSrv(type="text" placeholder="Filtrar por nombre..." oninput="filtrarServicios()")
+
+        table.gs-table
+          thead
+            tr
+              th #
+              th Nombre del Servicio
+              th Precio Base
+              th Duración
+          tbody#tbodyServicios
+            if servicios && servicios.length > 0
+              each s, i in servicios
+                tr.srv-row(data-nombre=s.nombre_servicio.toLowerCase())
+                  td(style="color:#444; font-size:0.8rem;")= i + 1
+                  td.td-nombre= s.nombre_servicio
+                  td.td-precio= '$' + parseFloat(s.precio_base).toLocaleString('es-MX', {minimumFractionDigits: 2})
+                  td
+                    span.tiempo-badge= (s.tiempo_estimado_hrs || '—') + ' h'
+            else
+              tr
+                td.empty-state(colspan="4") No hay servicios registrados.
+
+  include ./layouts/footer.pug
+
+  script.
+    function filtrarServicios() {
+      const term = document.getElementById('txtBuscarSrv').value.toLowerCase();
+      document.querySelectorAll('.srv-row').forEach(row => {
+        row.style.display = row.dataset.nombre.includes(term) ? '' : 'none';
+      });
+    }

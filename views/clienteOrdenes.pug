@@ -1,0 +1,71 @@
+include ./layouts/main_layout.pug
+include ./layouts/header.pug
+br.
+h1 Mis Órdenes de Trabajo
+
+.section-proceso
+  form(method="GET" action="/cliente/ordenes")
+      //- Contenedor simplificado y centrado
+  .filter-zone(style="margin: 30px 0; display: flex; flex-direction: column; align-items: flex-start;")
+    label(style="color: #ff9f43; font-size: 0.75rem; font-weight: bold; letter-spacing: 1px; margin-bottom: 8px; text-transform: uppercase;") 
+      |  Filtrar historial por estado
+    
+    form(method="GET" action="/cliente/ordenes" style="width: 100%; max-width: 400px;")
+      .custom-select-container(style="position: relative; display: flex; align-items: center;")
+        //- Icono sutil a la izquierda
+        span(style="position: absolute; left: 15px; color: #666; font-size: 0.9rem; pointer-events: none;") ⌕
+        
+        select.input-dark(
+          name="estatus" 
+          onchange="this.form.submit()" 
+          style="width: 100%; padding: 12px 15px 12px 40px; background: #1a1a1a; color: #eee; border: 1px solid #333; border-left: 3px solid #ff9f43; border-radius: 6px; cursor: pointer; appearance: none; font-size: 0.9rem; transition: all 0.2s ease;"
+          onfocus="this.style.borderColor='#ff9f43'; this.style.background='#222';"
+          onblur="this.style.borderColor='#333'; this.style.background='#1a1a1a';"
+        )
+          option(value="" selected=!estatus)  Todos los servicios
+          option(value="Recibido" selected=estatus==="Recibido") Recibido
+          option(value="En diagnóstico" selected=estatus==="En diagnóstico") En diagnóstico
+          option(value="En reparación" selected=estatus==="En reparación") En reparación
+          option(value="Pruebas de ruta" selected=estatus==="Pruebas de ruta") Pruebas de ruta
+          option(value="Listo para entrega" selected=estatus==="Listo para entrega") Listo para entrega
+
+        //- Flecha decorativa a la derecha (opcional para que sepa que es un select)
+        span(style="position: absolute; right: 15px; color: #ff9f43; font-size: 0.7rem; pointer-events: none;") ▼
+
+      if estatus
+        a(
+          href="/cliente/ordenes" 
+          style="display: inline-block; margin-top: 10px; color: #888; text-decoration: none; font-size: 0.7rem; font-weight: bold; transition: 0.3s;"
+          onmouseover="this.style.color='#e74c3c';"
+          onmouseout="this.style.color='#888';"
+        ) ✕ REESTABLECER VISTA
+  
+  if ordenes && ordenes.length > 0
+    .table-responsive
+      table.table
+        thead
+          tr
+            th Vehículo
+            th Placa
+            th Estatus Servicio
+            th Estatus Pago
+            th Fecha Entrada
+            th Fecha Entrega
+            th Acciones
+        tbody
+          each orden in ordenes
+            tr
+              td #{orden.vehiculo || 'No especificado'}
+              td #{orden.placa || 'No especificada'}
+              td #{orden.estatus_servicio}
+              td #{orden.estatus_pago}
+              td #{new Date(orden.created_at).toLocaleDateString()}
+              td #{orden.fecha_entrega ? new Date(orden.fecha_entrega).toLocaleDateString() : 'Por definir'}
+              td
+                a.btn.btn-primary(href=`/cliente/ordenes/${orden.id}`) Ver detalles
+  else
+    p No tienes órdenes activas con este estatus.
+
+include ./layouts/footer.pug
+
+include ./layouts/session_guard

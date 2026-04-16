@@ -1,0 +1,7 @@
+// Componente de formulario para buscar usuarios por nombre o rol usando el metodo GET
+div.buscador-container
+  form(action="/auth/usuarios" method="GET")
+    input(type="text" name="buscar" placeholder="Buscar por nombre o rol..." value=busquedaActual || '')
+    button(type="submit") Buscar
+    if busquedaActual
+      a(href="/auth/usuarios" class="btn-limpiar") Limpiar filtro

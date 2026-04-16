@@ -1,0 +1,28 @@
+// Componente que renderiza la tabla de resultados de la base de datos
+div.contenedor-tabla
+  table(border="1")
+    thead
+      tr
+        th Nombre
+        th Rol
+        th Teléfono
+        th Última Actualización
+        th Acciones
+    tbody
+      if usuarios && usuarios.length > 0
+        each usuario in usuarios
+          tr
+            td= usuario.nombre
+            td
+              strong= usuario.rol
+            td= usuario.telefono || 'N/A'
+            td= new Date(usuario.updated_at).toLocaleDateString()
+            td
+              if usuario.rol === 'empleado'
+                a(href=`/empleados/completar/${usuario.id}`) Configurar Datos Laborales
+              else
+                span -
+      else
+        tr
+          td(colspan="5") No se encontraron usuarios con ese criterio.
+

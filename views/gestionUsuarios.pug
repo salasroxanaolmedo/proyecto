@@ -1,0 +1,195 @@
+include ./layouts/header2
+
+block head
+  title Gestión de Usuarios | AutoTaller Olmedo
+  style.
+    /* ======= GESTIÓN USUARIOS ======= */
+    .gu-container {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+    .gu-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+    .gu-header h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem;
+      letter-spacing: 2px;
+      color: #fff;
+      margin: 0;
+    }
+    .gu-header h1 span { color: var(--naranja, #ff6600); }
+
+    /* FILTROS */
+    .gu-filters {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      background: #111;
+      border: 1px solid #262626;
+      border-radius: 6px;
+      padding: 14px 18px;
+    }
+    .gu-filters label {
+      font-size: 0.72rem;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
+    .gu-filters select, .gu-filters input[type="text"] {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      color: #eee;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 0.88rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .gu-filters select:focus, .gu-filters input[type="text"]:focus { border-color: #ff6600; }
+    .gu-filters input[type="text"] { flex: 1; min-width: 200px; }
+    .btn-filtrar {
+      background: #ff6600;
+      color: #000;
+      border: none;
+      padding: 8px 20px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 0.95rem;
+      letter-spacing: 1px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+    .btn-filtrar:hover { background: #e05500; }
+    .btn-limpiar {
+      background: transparent;
+      color: #666;
+      border: 1px solid #333;
+      padding: 8px 14px;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-limpiar:hover { color: #aaa; border-color: #555; }
+
+    /* BADGE ROL */
+    .rol-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .rol-admin      { background: #2a0a3a; color: #cc66ff; }
+    .rol-empleado   { background: #0a1f3a; color: #66aaff; }
+    .rol-recepcionista { background: #1a2a0a; color: #88cc44; }
+    .rol-cliente    { background: #1a1a0a; color: #ffcc44; }
+
+    /* TABLA */
+    .gu-table-wrap { overflow-x: auto; }
+    .counter-row {
+      font-size: 0.8rem;
+      color: #555;
+      margin-bottom: 8px;
+    }
+    .counter-row span { color: #ff6600; font-weight: bold; }
+    table.gu-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.87rem;
+    }
+    .gu-table thead th {
+      background: #111;
+      color: #ff6600;
+      padding: 10px 14px;
+      text-align: left;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 0.92rem;
+      letter-spacing: 1px;
+      border-bottom: 2px solid #222;
+    }
+    .gu-table tbody tr {
+      border-bottom: 1px solid #1a1a1a;
+      transition: background 0.15s;
+    }
+    .gu-table tbody tr:hover { background: #161616; }
+    .gu-table td {
+      padding: 11px 14px;
+      color: #ccc;
+      vertical-align: middle;
+    }
+    .td-nombre { color: #eee; font-weight: 600; }
+    .td-email  { color: #888; font-size: 0.82rem; }
+    .td-phone  { color: #777; font-size: 0.82rem; }
+    .empty-state {
+      text-align: center;
+      color: #444;
+      padding: 40px;
+      font-size: 0.9rem;
+    }
+
+block contenido
+  include ./layouts/header.pug
+
+  .gu-container
+    .gu-header
+      h1 GESTIÓN DE #[span USUARIOS]
+      p(style="color:#555; font-size:0.8rem; margin:0;") #{usuarios.length} registro(s) encontrado(s)
+
+    // FILTROS
+    form.gu-filters(action="/auth/usuarios" method="GET")
+      label Buscar por:
+      select(name="campo")
+        option(value="todos" selected=campoActual==='todos') Todos los campos
+        option(value="nombre" selected=campoActual==='nombre') Nombre
+        option(value="rol" selected=campoActual==='rol') Rol
+        option(value="email" selected=campoActual==='email') Correo
+        option(value="telefono" selected=campoActual==='telefono') Teléfono
+      input(type="text" name="buscar" placeholder="Escribe tu búsqueda..." value=busquedaActual)
+      button.btn-filtrar(type="submit") ⌕ BUSCAR
+      if busquedaActual
+        a.btn-limpiar(href="/auth/usuarios") ✕ Limpiar
+
+    .gu-table-wrap
+      table.gu-table
+        thead
+          tr
+            th Nombre
+            th Rol
+            th Correo / Acceso
+            th Teléfono
+            th Identificación
+        tbody
+          if usuarios && usuarios.length > 0
+            each u in usuarios
+              tr
+                td.td-nombre= u.nombre || '—'
+                td
+                  if u.rol === 'admin'
+                    span.rol-badge.rol-admin admin
+                  else if u.rol === 'empleado'
+                    span.rol-badge.rol-empleado empleado
+                  else if u.rol === 'recepcionista'
+                    span.rol-badge.rol-recepcionista recepcionista
+                  else
+                    span.rol-badge.rol-cliente cliente
+                td
+                  span.td-email= u.email || u.usuario_acceso || '—'
+                td.td-phone= u.telefono || '—'
+                td(style="color:#555; font-size:0.8rem;")= u.identificacion || '—'
+          else
+            tr
+              td.empty-state(colspan="5") No se encontraron usuarios con esos criterios.
+
+  include ./layouts/footer.pug

@@ -1,0 +1,62 @@
+//include ../layouts/main_layout
+include ../layouts/header2.pug
+
+block head
+  title Login | AutoTaller Olmedo
+
+block content
+  section.auth-section
+    .auth-left
+ 
+      span.gear-deco ⚙
+      span.gear-deco-2 ⚙
+      .brand
+        a.brand-logo(href="/") Auto
+          span Taller
+          |  Olmedo
+        .brand-sub Sistema de Gestión Interno
+      .panel-left-body
+        .eyebrow Portal del Taller
+        h2 Gestión
+          br
+          em Sin
+        
+          | Fricción.
+        p Administra citas, clientes, diagnósticos y facturas desde un solo lugar.
+      .panel-left-footer © 2026 AutoTallerOlmedo
+
+    .auth-container
+      header.auth-header
+        h1.section-title Iniciar 
+          span.highlight Sesión
+        p.auth-subtitle Acceso al Sistema
+      
+      form.contacto-form(action="/auth/login" method="POST")
+        .form-group
+          label(for="email") Correo Electrónico
+          input.input-dark(type="email" name="email" id="email" required)
+        
+        .form-group
+          label(for="password") Contraseña
+          input.input-dark(type="password" name="password" id="password" required)
+          span#togglePassword.pass-toggle
+            svg(width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+              path(d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z")
+              circle(cx="12" cy="12" r="3")
+              line#eyeSlash(x1="1" y1="1" x2="23" y2="23" style="opacity: 0;")
+        
+        button.btn-filter(type="submit") Entrar
+        
+        a.btn-back(href="/") Regresar al inicio
+
+  script.
+    const togglePassword = document.querySelector('#togglePassword');
+    const password = document.querySelector('#password');
+    const eyeSlash = document.querySelector('#eyeSlash');
+
+    togglePassword.addEventListener('click', function (e) {
+      const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+      password.setAttribute('type', type);
+      eyeSlash.style.opacity = (type === 'text') ? '1' : '0';
+    });
+    

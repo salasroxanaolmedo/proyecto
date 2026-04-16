@@ -1,0 +1,18 @@
+// Itera sobre el arreglo de servicios y los muestra en una tabla HTML
+div.lista-container
+  h3 Catálogo de Servicios
+  table
+    thead
+      tr
+        th Nombre
+        th Precio Base
+        th Tiempo Estimado (Hrs)
+    tbody
+      each servicio in servicios
+        tr
+          td= servicio.nombre_servicio
+          td= "$" + servicio.precio_base
+          td= servicio.tiempo_estimado_hrs
+      else
+        tr
+          td(colspan="3") No hay servicios registrados.

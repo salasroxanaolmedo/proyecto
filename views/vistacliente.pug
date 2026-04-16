@@ -1,0 +1,82 @@
+include ./layouts/main_layout.pug
+include ./layouts/vabvarcliente.pug
+
+h1 Cliente
+
+H1 Cliente
+      // CONTENEDOR PRINCIPAL
+.section-proceso
+  h2 Proceso del Vehículo
+
+  // 🔥 BARRA DE PROGRESO
+  .steps
+    .step(class=['En diagnóstico','En reparación','Pruebas de ruta','Listo para entrega'].includes(orden.estatus_servicio) ? 'done' : orden.estatus_servicio === 'Recibido' ? 'active' : '')
+      span.circle
+        if ['En diagnóstico','En reparación','Pruebas de ruta','Listo para entrega'].includes(orden.estatus_servicio)
+          | ✔
+      span.label Recibido
+
+    .step(class=['En reparación','Pruebas de ruta','Listo para entrega'].includes(orden.estatus_servicio) ? 'done' : orden.estatus_servicio === 'En diagnóstico' ? 'active' : '')
+      span.circle
+        if ['En reparación','Pruebas de ruta','Listo para entrega'].includes(orden.estatus_servicio)
+          | ✔
+      span.label En diagnóstico
+
+    .step(class=['Pruebas de ruta','Listo para entrega'].includes(orden.estatus_servicio) ? 'done' : orden.estatus_servicio === 'En reparación' ? 'active' : '')
+      span.circle
+        if ['Pruebas de ruta','Listo para entrega'].includes(orden.estatus_servicio)
+          | ✔
+      span.label En reparación
+
+    .step(class=orden.estatus_servicio === 'Listo para entrega' ? 'done' : orden.estatus_servicio === 'Pruebas de ruta' ? 'active' : '')
+      span.circle
+        if orden.estatus_servicio === 'Listo para entrega'
+          | ✔
+      span.label Pruebas de ruta
+
+    .step(class=orden.estatus_servicio === 'Listo para entrega' ? 'active' : '')
+      span.circle
+      span.label Listo para entrega
+
+  .estado-info
+    .card
+      h3 Estado actual
+      p #{orden.estatus_servicio}
+
+    .card
+      h3 Mecánico asignado
+      if orden.mecanico
+        p= orden.mecanico.nombre
+      else
+          p Por asignar
+
+    .card
+      h3 Estatus pago
+      p #{orden.estatus_pago}
+
+    .card
+      h3 Auto
+      p #{orden['vehiculo']}
+
+    .card
+      h3 Placa
+      p #{orden.placa}
+
+    .card
+      h3 Luces
+      p #{orden.check_luces ? ' OK' : ' Pendiente'}
+
+    .card
+      h3 Golpes
+      p #{orden.check_golpes ? ' OK' : ' Pendiente'}
+
+    .card
+      h3 Limpieza
+      p #{orden.check_limpieza ? ' OK' : ' Pendiente'}
+
+    .card
+      h3 Fecha entrega
+      p= fechaEntregaCalculada ? fechaEntregaCalculada : 'Por calcular'
+
+
+include ./layouts/footer.pug

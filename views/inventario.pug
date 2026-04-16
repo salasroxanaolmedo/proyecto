@@ -1,0 +1,339 @@
+include ./layouts/header2
+
+block head
+  title Inventario | AutoTaller Olmedo
+  style.
+    /* ======= ESTILOS INVENTARIO ======= */
+    .inv-container {
+      max-width: 1100px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+    .inv-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+    .inv-header h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem;
+      letter-spacing: 2px;
+      color: #fff;
+    }
+    .inv-header h1 span { color: var(--naranja, #ff6600); }
+    .btn-nuevo {
+      background: #ff6600;
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1rem;
+      letter-spacing: 1px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-nuevo:hover { background: #e05500; }
+
+    /* ALERTAS */
+    .alerta {
+      padding: 12px 18px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+    }
+    .alerta-exito { background: #1a3a1a; color: #66ff66; border-left: 4px solid #33cc33; }
+    .alerta-error { background: #3a1a1a; color: #ff6666; border-left: 4px solid #cc3333; }
+
+    /* BUSCADOR */
+    .inv-search {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 4px;
+      padding: 8px 14px;
+      max-width: 350px;
+    }
+    .inv-search input {
+      background: transparent;
+      border: none;
+      color: #eee;
+      font-size: 0.9rem;
+      outline: none;
+      width: 100%;
+    }
+    .inv-search span { color: #666; font-size: 1.1rem; }
+
+    /* TABLA */
+    .inv-table-wrap { overflow-x: auto; }
+    table.inv-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    .inv-table thead th {
+      background: #111;
+      color: #ff6600;
+      padding: 10px 14px;
+      text-align: left;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 0.95rem;
+      letter-spacing: 1px;
+      border-bottom: 2px solid #333;
+    }
+    .inv-table tbody tr {
+      border-bottom: 1px solid #1f1f1f;
+      transition: background 0.15s;
+    }
+    .inv-table tbody tr:hover { background: #1c1c1c; }
+    .inv-table td {
+      padding: 11px 14px;
+      color: #ddd;
+      vertical-align: middle;
+    }
+    .stock-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 0.8rem;
+    }
+    .stock-ok   { background: #1a3a1a; color: #66ff66; }
+    .stock-low  { background: #3a2a00; color: #ffaa00; }
+    .stock-zero { background: #3a1a1a; color: #ff5555; }
+
+    /* ACCIONES */
+    .btn-edit, .btn-del {
+      border: none;
+      padding: 5px 12px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 0.78rem;
+      font-weight: bold;
+      margin-right: 5px;
+      transition: opacity 0.2s;
+    }
+    .btn-edit { background: #333; color: #ff6600; border: 1px solid #444; }
+    .btn-edit:hover { background: #444; }
+    .btn-del  { background: #3a1a1a; color: #ff5555; border: 1px solid #5a2a2a; }
+    .btn-del:hover { opacity: 0.8; }
+
+    /* MODAL */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 500;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-overlay.activo { display: flex; }
+    .modal-box {
+      background: #161616;
+      border: 1px solid #333;
+      border-radius: 6px;
+      padding: 30px;
+      width: 100%;
+      max-width: 460px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.9);
+    }
+    .modal-box h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.4rem;
+      color: #ff6600;
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #222;
+      padding-bottom: 10px;
+    }
+    .modal-box label {
+      display: block;
+      font-size: 0.75rem;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 5px;
+      margin-top: 14px;
+    }
+    .modal-box input {
+      width: 100%;
+      box-sizing: border-box;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      color: #eee;
+      padding: 9px 12px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+    .modal-box input:focus { outline: none; border-color: #ff6600; }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 22px;
+    }
+    .btn-cancel {
+      background: #222;
+      border: 1px solid #333;
+      color: #aaa;
+      padding: 9px 18px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+    .btn-save {
+      background: #ff6600;
+      border: none;
+      color: #000;
+      padding: 9px 22px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1rem;
+      letter-spacing: 1px;
+    }
+    .btn-save:hover { background: #e05500; }
+
+    /* MODAL ELIMINAR */
+    .modal-del-text { color: #ccc; font-size: 0.9rem; margin-bottom: 10px; }
+    .modal-del-nombre { color: #ff6600; font-weight: bold; }
+
+block contenido
+  include ./layouts/header.pug
+
+  .inv-container
+    .inv-header
+      h1 GESTIÓN DE #[span INVENTARIO]
+      button.btn-nuevo(onclick="abrirModalNuevo()") + AGREGAR PRODUCTO
+
+    if exito
+      .alerta.alerta-exito ✔ #{exito}
+    if errorMsg
+      .alerta.alerta-error ✕ #{errorMsg}
+
+    .inv-search
+      span ⌕
+      input#txtBuscar(type="text" placeholder="Buscar producto..." autocomplete="off" oninput="filtrarTabla()")
+
+    .inv-table-wrap
+      table.inv-table
+        thead
+          tr
+            th #
+            th Nombre del Producto
+            th Stock
+            th Precio Unitario
+            th Acciones
+        tbody#tbodyInventario
+          if productos && productos.length > 0
+            each p, i in productos
+              tr.inv-row(data-nombre=p.nombre_producto.toLowerCase())
+                td= i + 1
+                td= p.nombre_producto
+                td
+                  if p.cantidad_stock === 0
+                    span.stock-badge.stock-zero 0 — Sin stock
+                  else if p.cantidad_stock <= 5
+                    span.stock-badge.stock-low= p.cantidad_stock + ' — Bajo'
+                  else
+                    span.stock-badge.stock-ok= p.cantidad_stock
+                td= p.precio_unitario ? '$' + parseFloat(p.precio_unitario).toFixed(2) : '$0.00'
+                td
+                  button.btn-edit(
+                    onclick=`abrirModalEditar('${p.id}', '${p.nombre_producto.replace(/'/g, "\\'")}', ${p.cantidad_stock}, ${p.precio_unitario || 0})`
+                  ) ✏ Editar
+                  button.btn-del(
+                    onclick=`abrirModalEliminar('${p.id}', '${p.nombre_producto.replace(/'/g, "\\'")}')`
+                  ) 🗑 Eliminar
+          else
+            tr
+              td(colspan="5" style="text-align:center; color:#555; padding:30px;") No hay productos registrados en inventario.
+
+  include ./layouts/footer.pug
+
+  // ===== MODAL: NUEVO PRODUCTO =====
+  div#modalNuevo.modal-overlay
+    div.modal-box
+      h2 + NUEVO PRODUCTO
+      form(action="/inventario" method="POST")
+        label Nombre del Producto *
+        input(type="text" name="nombre_producto" required placeholder="Ej: Aceite Mobil 10W-40")
+        label Cantidad en Stock
+        input(type="number" name="cantidad_stock" min="0" value="0")
+        label Precio Unitario ($)
+        input(type="number" name="precio_unitario" min="0" step="0.01" value="0")
+        .modal-actions
+          button.btn-cancel(type="button" onclick="cerrarModales()") Cancelar
+          button.btn-save(type="submit") GUARDAR
+
+  // ===== MODAL: EDITAR PRODUCTO =====
+  div#modalEditar.modal-overlay
+    div.modal-box
+      h2 ✏ EDITAR PRODUCTO
+      form#formEditar(method="POST")
+        label Nombre del Producto *
+        input#edit_nombre(type="text" name="nombre_producto" required)
+        label Cantidad en Stock
+        input#edit_stock(type="number" name="cantidad_stock" min="0")
+        label Precio Unitario ($)
+        input#edit_precio(type="number" name="precio_unitario" min="0" step="0.01")
+        .modal-actions
+          button.btn-cancel(type="button" onclick="cerrarModales()") Cancelar
+          button.btn-save(type="submit") ACTUALIZAR
+
+  // ===== MODAL: ELIMINAR PRODUCTO =====
+  div#modalEliminar.modal-overlay
+    div.modal-box
+      h2 🗑 ELIMINAR PRODUCTO
+      p.modal-del-text ¿Seguro que deseas eliminar el producto:
+      p.modal-del-nombre#del_nombre_label —
+      p.modal-del-text(style="font-size:0.8rem; color:#666;") Esta acción no se puede deshacer.
+      form#formEliminar(method="POST")
+        .modal-actions
+          button.btn-cancel(type="button" onclick="cerrarModales()") Cancelar
+          button.btn-save(type="submit" style="background:#cc3333;") ELIMINAR
+
+  script.
+    function abrirModalNuevo() {
+      document.getElementById('modalNuevo').classList.add('activo');
+    }
+
+    function abrirModalEditar(id, nombre, stock, precio) {
+      document.getElementById('formEditar').action = '/inventario/editar/' + id;
+      document.getElementById('edit_nombre').value = nombre;
+      document.getElementById('edit_stock').value = stock;
+      document.getElementById('edit_precio').value = precio;
+      document.getElementById('modalEditar').classList.add('activo');
+    }
+
+    function abrirModalEliminar(id, nombre) {
+      document.getElementById('formEliminar').action = '/inventario/eliminar/' + id;
+      document.getElementById('del_nombre_label').innerText = nombre;
+      document.getElementById('modalEliminar').classList.add('activo');
+    }
+
+    function cerrarModales() {
+      document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('activo'));
+    }
+
+    // Cerrar al hacer click fuera del modal
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', function(e) {
+        if (e.target === this) cerrarModales();
+      });
+    });
+
+    // Filtro de búsqueda
+    function filtrarTabla() {
+      const term = document.getElementById('txtBuscar').value.toLowerCase();
+      document.querySelectorAll('.inv-row').forEach(row => {
+        row.style.display = row.dataset.nombre.includes(term) ? '' : 'none';
+      });
+    }

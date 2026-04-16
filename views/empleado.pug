@@ -1,0 +1,194 @@
+block head
+  title Gestión de Servicios | AutoTaller Olmedo
+
+include ./layouts/main_layout
+include ./layouts/session_guard
+br. 
+block content
+  include ./layouts/header.pug
+
+  main.panel-container
+    .page-header
+      .br
+        div
+          p.page-eyebrow ⚙ Gestión de servicios
+          h1.page-title Panel de 
+            span.ac Empleado
+      .reloj
+        strong#reloj —
+        |  Actualización en tiempo real
+
+    .stats-grid
+      .scard
+        .lbl Recibidos
+        #stat-recibidos.num.c-b 00
+      .scard
+        .lbl En proceso
+        #stat-proceso.num.c-o 00
+      .scard
+        .lbl Listos
+        #stat-listos.num.c-g 00
+      .scard
+        .lbl Total hoy
+        #stat-total.num.c-y 00
+
+    .filters-row
+      .filter-search
+        span.filter-icon ⌕
+        input#txtBuscar.input-dark(type="text", placeholder="Buscar placa, cliente, vehículo...", autocomplete="off")
+      select#filtroStatus.sel-filter
+        option(value="") Todos los estados
+        option(value="Recibido") Recibido
+        option(value="En diagnóstico") En diagnóstico
+        option(value="En reparación") En reparación
+        option(value="Pruebas de ruta") Pruebas de ruta
+        option(value="Listo para entrega") Listo para entrega
+
+    .tbl-wrap
+      .tbl-head-bar
+        span
+          span#tblCount.tbl-count 0
+          |  vehículos encontrados
+        span.d-none.d-md-block Sincronizado con Base de Datos
+      table#tblAutos
+        thead
+          tr
+            th ID
+            th Vehículo
+            th Placa
+            th Cliente
+            th Estado
+            th Espera (h)
+            th Entrega
+            th Acción
+        tbody#tbodyAutos
+          if tickets && tickets.length > 0
+            each t in tickets
+              //- FILTRO: Solo mostrar si existe el perfil y NO es Cliente Mostrador
+              if t.perfiles && t.perfiles.nombre !== 'CLIENTE MOSTRADOR' && t.perfiles.nombre !== 'Cliente General'
+                tr.ticket-row
+                  td= t.id.toString().substring(0, 6).toUpperCase()
+                  td.col-vehiculo= t.vehiculo || 'Sin modelo'
+                  td.col-placa= t.placa || 'S/P'
+                  td.col-cliente= t.perfiles.nombre
+                  td
+                    form(action="/empleado/actualizar-ticket" method="POST" style="margin:0;")
+                      input(type="hidden" name="ticketId" value=t.id)
+                      select.sel-estado(name="nuevoEstatus" onchange="this.form.submit()")
+                        option(value="Recibido" selected=t.estatus_servicio === 'Recibido') RECIBIDO
+                        option(value="En diagnóstico" selected=t.estatus_servicio === 'En diagnóstico') EN DIAGNÓSTICO
+                        option(value="En reparación" selected=t.estatus_servicio === 'En reparación') EN REPARACIÓN
+                        option(value="Pruebas de ruta" selected=t.estatus_servicio === 'Pruebas de ruta') PRUEBAS DE RUTA
+                        option(value="Listo para entrega" selected=t.estatus_servicio === 'Listo para entrega') LISTO PARA ENTREGA
+                  td.col-espera(style="font-weight: bold; color: var(--naranja);")
+                    | #{t.esperaHoras > 0 ? t.esperaHoras + 'h' : 'S/S'}
+                  td= t.fechaEntregaFormateada
+                  td
+                    if t.estatus_servicio === 'Listo para entrega'
+                      form(action="/empleado/archivar-ticket" method="POST" onsubmit="return confirm('¿Confirmas que el vehículo ha sido retirado?')")
+                        input(type="hidden" name="ticketId" value=t.id)
+                        button.btn-action-delete(type="submit")  Entregado
+                    else
+                      button.btn-action-delete.disabled(disabled) 
+          else
+            tr.empty-row
+              td.empty-state(colspan="8")  NO HAY SERVICIOS ASIGNADOS ACTUALMENTE.
+
+    .pg-bar
+      span.pg-info
+        | Mostrando 
+        span#pgMostrando 0
+        |  de 
+        span#pgTotal 0
+        |  registros
+
+    //- SECCIÓN DE TRABAJOS FINALIZADOS
+    .finished-header(style="margin-top: 40px; border-bottom: 2px solid var(--border-color); padding-bottom: 10px;")
+      h2(style="color: var(--verde-brillante); font-size: 1.5rem; display: flex; align-items: center; gap: 10px;")
+        span
+        | Trabajos Finalizados (Archivados)
+
+    .tbl-wrap
+      table#tblFinalizados
+        thead
+          tr
+            th ID
+            th Vehículo
+            th Placa
+            th Cliente
+            th Estado
+            th Fecha Entrega
+        tbody
+          if ticketsFinalizados && ticketsFinalizados.length > 0
+            each f in ticketsFinalizados
+              tr.finalizado-row
+                td= f.id.toString().substring(0, 6).toUpperCase()
+                td= f.vehiculo || 'Sin modelo'
+                td= f.placa || 'S/P'
+                td= f.perfiles.nombre
+                td
+                  span.badge-success(style="background: rgba(46, 204, 113, 0.2); color: #2ecc71; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem;") FINALIZADO
+                td= f.fechaEntregaFormateada
+          else
+            tr.empty-row
+              td.empty-state(colspan="6") NO HAY TRABAJOS FINALIZADOS AÚN.
+
+  include ./layouts/footer.pug
+
+  script.
+    function filtrarTodo() {
+      const query = document.getElementById('txtBuscar').value.toLowerCase();
+      const statusFiltro = document.getElementById('filtroStatus').value;
+      const filas = document.querySelectorAll('.ticket-row');
+      
+      let cont = { recibidos: 0, proceso: 0, listos: 0, visibles: 0 };
+
+      filas.forEach(fila => {
+        const v = fila.querySelector('.col-vehiculo').innerText.toLowerCase();
+        const p = fila.querySelector('.col-placa').innerText.toLowerCase();
+        const c = fila.querySelector('.col-cliente').innerText.toLowerCase();
+        const estado = fila.querySelector('.sel-estado').value;
+
+        // Conteo para estadísticas (solo de filas visibles en el DOM)
+        if (estado === 'Recibido') cont.recibidos++;
+        else if (['En diagnóstico', 'En reparación', 'Pruebas de ruta'].includes(estado)) cont.proceso++;
+        else if (estado === 'Listo para entrega') cont.listos++;
+
+        const matchBusqueda = v.includes(query) || p.includes(query) || c.includes(query);
+        const matchStatus = statusFiltro === "" || estado === statusFiltro;
+
+        if (matchBusqueda && matchStatus) {
+          fila.style.display = "";
+          cont.visibles++;
+        } else {
+          fila.style.display = "none";
+        }
+      });
+
+      // Actualizar tarjetas de stats
+      document.getElementById('stat-recibidos').innerText = cont.recibidos.toString().padStart(2, '0');
+      document.getElementById('stat-proceso').innerText = cont.proceso.toString().padStart(2, '0');
+      document.getElementById('stat-listos').innerText = cont.listos.toString().padStart(2, '0');
+      document.getElementById('stat-total').innerText = filas.length.toString().padStart(2, '0');
+      
+      document.getElementById('tblCount').innerText = cont.visibles;
+      document.getElementById('pgMostrando').innerText = cont.visibles;
+      document.getElementById('pgTotal').innerText = filas.length;
+    }
+
+    document.getElementById('txtBuscar').addEventListener('input', filtrarTodo);
+    document.getElementById('filtroStatus').addEventListener('change', filtrarTodo);
+
+    function tick() {
+      const el = document.getElementById('reloj');
+      if (el) el.textContent = new Date().toLocaleString('es-MX', {
+        weekday: 'short', day: '2-digit', month: 'short',
+        year: 'numeric', hour: '2-digit', minute: '2-digit'
+      });
+    }
+
+    window.onload = () => {
+      tick();
+      setInterval(tick, 30000);
+      filtrarTodo(); 
+    };

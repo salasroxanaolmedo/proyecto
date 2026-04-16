@@ -1,0 +1,135 @@
+include ./layouts/main_layout.pug
+include ./layouts/nabvar2.pug
+
+//- Eliminamos .br y br manuales
+header.hero
+  .hero-bg
+  .hero-content
+    .hero-eyebrow Mecánica Automotriz Profesional
+    h1
+      span.highlight Tu Auto En Buenas 
+      | Manos
+    p.hero-desc
+      | Más de 20 años dando vida a los vehículos de nuestra comunidad. 
+      | Diagnóstico preciso, trabajo honesto y garantía real en cada servicio.
+    .hero-actions
+      a.btn-primary(href="/auth/login") Iniciar Sesion
+      a.btn-secondary(href="#servicios") Ver Servicios
+
+// SERVICIOS
+section#servicios
+  .servicios-header
+    .header-text-container
+      .section-tag Lo que hacemos
+      h2.section-title Nuestros Servicios
+    p Ofrecemos soluciones completas de mantenimiento para cualquier tipo de vehículo, con tecnología de diagnóstico de última generación.
+
+  .servicios-grid
+    .servicio-card
+      span.servicio-icon 🔧
+      h3 Cambio de Aceite Basico
+      p Cambio con aceite mineral incluye aceite mineral, revisión básica de niveles del motor y mano de obra.
+      .servicio-precio Desde $1200 MXN
+
+    .servicio-card
+      span.servicio-icon 🔧
+      h3 Cambio de Aceite Plus
+      p Cambio con aceite semisintético incluye aceite semisintético, cambio de filtro y revisión de puntos básicos.
+      .servicio-precio Desde $1550 MXN
+
+    .servicio-card
+      span.servicio-icon 🔧
+      h3 Cambio de Aceite ExtraPlus
+      p Cambio con aceite sintético incluye filtro, bujias y revisión completa de seguridad.
+      .servicio-precio Desde $2000 MXN
+
+    .servicio-card
+      span.servicio-icon ⚖️🛞
+      h3 Sistema de Blanceo
+      p Ajuste de peso en ruedas para eliminar vibraciones y mejorar la estabilidad al conducir.
+      .servicio-precio Desde $550 MXM
+
+    .servicio-card
+      span.servicio-icon ⚡
+      h3 Sistema de Alineacion
+      p Revisión de batería, alternador y solución a fallas eléctricas con equipo especializado.
+      .servicio-precio Desde $500 MXN
+
+    .servicio-card
+      span.servicio-icon 💧
+      h3 Revisión de líquidos
+      p Inspección de niveles de aceite, refrigerante, frenos y dirección hidráulica.
+      .servicio-precio Desde $450 MXN
+
+// POR QUÉ NOSOTROS
+section#nosotros
+  .nosotros-visual
+    .big-num 10w-20
+    .badge
+      span ★ 4.9
+      | Calificación promedio
+
+  .nosotros-content
+    .section-tag Por qué elegirnos
+    h2.section-title Calidad Que Se Siente
+
+    ul.ventajas
+      li
+        span.ventaja-num 01
+        .ventaja-text
+          strong Aceite y Filtros de Calidad
+          span Utilizamos aceites de alto rendimiento y filtros certificados.
+
+      li
+        span.ventaja-num 02
+        .ventaja-text
+          strong Alineación y Balanceo Preciso
+          span Ajustamos tu vehículo con equipo especializado para evitar desgaste irregular.
+
+      li
+        span.ventaja-num 03
+        .ventaja-text
+          strong Revisión Completa de Líquidos
+          span Verificamos anticongelante, frenos y dirección para tu seguridad.
+
+      li
+        span.ventaja-num 04
+        .ventaja-text
+          strong Servicio Rápido y Confiable
+          span Trabajamos de forma eficiente para que regreses pronto a la carretera.
+
+// PROCESO
+section#proceso
+  .proceso-intro
+    .section-tag Cómo trabajamos
+    h2.section-title Simple y Sin Sorpresas
+    p Desde que llegas hasta que te vas satisfecho, seguimos un proceso claro diseñado para tu tranquilidad.
+
+  .proceso-steps
+    .paso
+      .paso-num 01
+      h4 Recepción
+      p Registramos tu vehículo y verificamos el tipo de servicio que necesitas.
+
+    .paso
+      .paso-num 02
+      h4 Diagnóstico
+      p Revisamos niveles y estado general para asegurar un servicio completo.
+
+    .paso
+      .paso-num 03
+      h4 Presupuesto
+      p Realizamos el mantenimiento con equipo y productos de alta calidad.
+
+    .paso
+      .paso-num 04
+      h4 Entrega
+      p Te explicamos el trabajo realizado y dejamos tu auto listo para circular.
+
+// CTA BANNER
+.cta-banner
+  h2 ¿Tu sensor de mantenimiento 
+    em está encendido? 
+    | ¡Nosotros lo apagamos!
+
+include ./layouts/footer.pug
